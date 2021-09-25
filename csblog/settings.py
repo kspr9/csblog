@@ -129,4 +129,8 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# add this variable so that login does not redirect us to '/accounts/profile/' but 'blog-home'
+LOGIN_REDIRECT_URL = 'blog-home'
 
+# 
+LOGIN_URL = 'login'

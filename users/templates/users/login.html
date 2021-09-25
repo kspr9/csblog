@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %} <!--loads crispy_forms into the page-->
 {% block content %}
     <div class="content-section">
+        <!-- users.views has method 'register' that checks if request method is 'POST'-->
         <form method="POST"> 
             {% csrf_token %}   <!--django requires always csrf_token with forms -->
             <fieldset class="form-group">
