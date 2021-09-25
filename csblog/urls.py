@@ -26,3 +26,13 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name="logout"),
     path('', include('blog.urls')),
 ]
+
+# To be used on in dev mode ie if debug mode is True
+#for enabling media from media_root to be viewed via urls and templates
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # In the documentation there was STATIC_URL and STATIC_ROOT, 
+    # # however for this example we added MEDIA_URL and MEDIA_ROOT to settings.py
