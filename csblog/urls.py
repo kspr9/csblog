@@ -27,6 +27,7 @@ urlpatterns = [
     path('', include('blog.urls')),
 ]
 
+# Below is '/media/' route for urlpatterns <-- this is for dev only
 # To be used on in dev mode ie if debug mode is True
 #for enabling media from media_root to be viewed via urls and templates
 from django.conf import settings

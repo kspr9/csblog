@@ -10,7 +10,19 @@
             <p class="text-secondary">{{ user.email }}</p>
             </div>
         </div>
-        <!-- FORM HERE -->
+        <form method="POST" enctype="multipart/form-data"> 
+            {% csrf_token %}   <!--django requires always csrf_token with forms -->
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4"> 
+                    Profile info
+                </legend>
+                {{ u_form|crispy }} <!-- '|crispy' adds crispy_forms to current form-->
+                {{ p_form|crispy }} <!-- '|crispy' adds crispy_forms to current form-->
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+        </form>
     </div>
 
 {% endblock content %}

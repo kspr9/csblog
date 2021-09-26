@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 # Create your views here.
 def register(request): # views.py functions take always 'request' as argument
     # django already has user registration form
-    # Method 'POST' is defined in login.html
+    # Method 'POST' is defined in login.html with button type as 'submit'
     if request.method == 'POST':
         #takes form 'POST' method contents from login.html and modified UserRegisterForm function as argument
         form = UserRegisterForm(request.POST)
@@ -26,4 +26,25 @@ def register(request): # views.py functions take always 'request' as argument
 # Without defining, redirects to 'accounts/login', but after defining 'LOGIN_URL = 'login'' user gets directed to our url named 'login'
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    # 'POST' is defined in profile.html as button type 'submit'
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, 
+                                    request.FILES, 
+                                    instance=request.user.profile)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('profile')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+        
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    return render(request, 'users/profile.html', context)
+
