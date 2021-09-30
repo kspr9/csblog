@@ -15,6 +15,8 @@ class Profile(models.Model):
     def save(self):
         super().save()
 
+        # Adding the profile image to standard save method #
+        ####################################################
         img = Image.open(self.image.path)
 
         if img.height > 300 or img.width > 300:
