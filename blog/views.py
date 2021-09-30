@@ -1,11 +1,17 @@
 from django.shortcuts import render
+# checks that user is logged in before posting or updating when using view class
+# (was done with a @decorator when using view method)
+# UserPassesTestMixin allows only the author of the post to edit posts, prevents other users editing other users posts
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 #importing Post model to be used for class based views // or earlier in home function
 from .models import Post
 #importing list views for class based views
 from django.views.generic import (
     ListView, 
     DetailView, 
-    CreateView
+    CreateView,
+    UpdateView,
+    DeleteView
 )
 
 
@@ -33,10 +39,12 @@ class Post_DetailView(DetailView):
     # looking for a template 
     # 'blog/post_detail'
 
-class Post_CreateView(CreateView):
+class Post_CreateView(LoginRequiredMixin, CreateView):
     model = Post # 'Post' defined in models.py
     fields = ['title', 'content']
 
+    # Since blog_post requires an author, then only above lines provide only form fields, but do not define the author for the post.
+    # below we define that post has author and that author is the current logged in user.
     # overrride form_valid method > ie tell the program that post has an author while creating
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -44,6 +52,40 @@ class Post_CreateView(CreateView):
 
     # looking for a template 
     # 'blog/post_create'
+
+class Post_UpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post # 'Post' defined in models.py
+    fields = ['title', 'content']
+
+    # override form_valid method > ie tell the program that post has an author while creating
+    def form_valid(self, form):
+        form.instance.author = self.request.user # sets user of the request as author of the form
+        return super().form_valid(form)
+
+    # checks that only the author of the post is able to edit the post
+    def test_func(self):
+        post = self.get_object() # selects the current post
+        if self.request.user == post.author:
+            return True
+        return False
+
+    # looking for a template 
+    # 'blog/post_create'
+
+class Post_DeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post # 'Post' defined in models.py
+    success_url = '/'
+
+    # checks that only the author of the post is able to edit the post
+    def test_func(self):
+        post = self.get_object() # selects the current post
+        if self.request.user == post.author:
+            return True
+        return False
+
+    # don't forget to add to urlpatterns
+    # looking for a template 
+    # 'blog/post_detail'
 
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
