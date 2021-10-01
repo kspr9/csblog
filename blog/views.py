@@ -27,11 +27,13 @@ from django.views.generic import (
 #    return render(request, 'blog/home.html', context)
 ##################
 
+# acts as Home at the moment
 class Post_ListView(ListView):
     model = Post # 'Post' defined in models.py
     template_name = 'blog/home.html' # << change here to customize << default url is <app>/<model>_<viewtype>.html  (eg'blog/post_list') 
     context_object_name = 'posts' # home.html loops over 'for post in posts', this line here gives current context object (ie model = Post) a name  = current model ie Post model
     ordering = ['-date_posted'] # orders posts from newest to oldest
+    paginate_by = 5
 
 class Post_DetailView(DetailView):
     model = Post # 'Post' defined in models.py
