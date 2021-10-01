@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 # checks that user is logged in before posting or updating when using view class
 # (was done with a @decorator when using view method)
 # UserPassesTestMixin allows only the author of the post to edit posts, prevents other users editing other users posts
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 #importing Post model to be used for class based views // or earlier in home function
 from .models import Post
 #importing list views for class based views
@@ -34,6 +35,16 @@ class Post_ListView(ListView):
     context_object_name = 'posts' # home.html loops over 'for post in posts', this line here gives current context object (ie model = Post) a name  = current model ie Post model
     ordering = ['-date_posted'] # orders posts from newest to oldest
     paginate_by = 5
+
+class User_Post_ListView(ListView):
+    model = Post # 'Post' defined in models.py
+    template_name = 'blog/user_posts.html' # << change here to customize << default url is <app>/<model>_<viewtype>.html  (eg'blog/post_list') 
+    context_object_name = 'posts' # home.html loops over 'for post in posts', this line here gives current context object (ie model = Post) a name  = current model ie Post model
+    paginate_by = 5
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return Post.objects.filter(author=user).order_by('-date_posted')
 
 class Post_DetailView(DetailView):
     model = Post # 'Post' defined in models.py
